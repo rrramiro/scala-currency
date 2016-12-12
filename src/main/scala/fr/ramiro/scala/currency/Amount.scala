@@ -4,7 +4,7 @@ import java.text.NumberFormat
 import scala.language.implicitConversions
 
 object Amount {
-  implicit def numberAmountCurrencyWrapper[A](value: A)(implicit currencyConversion: ConfigurationType, conv: A => Number): Amount = {
+  implicit def numberAmountCurrencyWrapper[A <: AnyVal](value: A)(implicit currencyConversion: ConfigurationType, toNumber: A => Number): Amount = {
     Amount(value.doubleValue(), currencyConversion.base)
   }
 
