@@ -247,5 +247,7 @@ object Currency {
 sealed trait Currency {
   lazy val native: JavaCurrency = JavaCurrency.getInstance(this.toString)
 
-  def apply[A <: AnyVal](value: A)(implicit currencyConversion: ConfigurationType, toNumber: A => Number): Amount = Amount(value.doubleValue(), this)
+  def apply[A <: AnyVal](value: A)(implicit currencyConversion: ConfigurationType, toNumber: A => Number): Amount = {
+    Amount(value.doubleValue(), this)
+  }
 }
