@@ -4,11 +4,11 @@ import java.text.NumberFormat
 import scala.language.implicitConversions
 
 object Amount {
-  implicit def numberAmountCurrencyWrapper[A <: AnyVal](value: A)(implicit currencyConversion: ConfigurationType, toNumber: A => Number): Amount = {
-    Amount(value.doubleValue(), currencyConversion.base)
+  implicit def numberAmountCurrencyWrapper[A <: AnyVal](value: A)(implicit currencyContext: CurrencyContext, toNumber: A => Number): Amount = {
+    Amount(value.doubleValue(), currencyContext.base)
   }
 
-  implicit def amountNumeric(implicit currencyConversion: ConfigurationType) = new Numeric[Amount] {
+  implicit def amountNumeric(implicit currencyContext: CurrencyContext) = new Numeric[Amount] {
 
     override def plus(x: Amount, y: Amount): Amount = x + y
 
@@ -32,7 +32,7 @@ object Amount {
   }
 }
 
-case class Amount(value: AmountType, currency: Currency)(implicit currencyConversion: ConfigurationType) extends Ordered[Amount] {
+case class Amount(value: AmountType, currency: Currency)(implicit currencyConversion: CurrencyContext) extends Ordered[Amount] {
   def to(targetCurrency: Currency): Amount = if (targetCurrency == currency) {
     this
   } else {
@@ -57,7 +57,7 @@ case class Amount(value: AmountType, currency: Currency)(implicit currencyConver
 
   override def toString: String = {
     val formatter = NumberFormat.getCurrencyInstance(currencyConversion.locale)
-    formatter.setCurrency(currency.native)
+    formatter.setCurrency(currency.toJava)
     formatter.format(value)
   }
 }

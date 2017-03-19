@@ -1,12 +1,11 @@
 package fr.ramiro.scala.currency
 
 import org.scalatest.FunSuite
-import scala.language.implicitConversions
-import java.util.{ Currency => JavaCurrency }
 import fr.ramiro.scala.currency.Currency._
+import scala.language.implicitConversions
 
 class CurrencyOperationsTest extends FunSuite {
-  private implicit val currencyConversion = CurrencyConversionConfiguration(USD, GBP -> 0.8)
+  private implicit val currencyConversion = CurrencyContext(base = USD, GBP -> 0.8)
 
   test("Addition") {
     val dollars = USD(2.0)
@@ -17,12 +16,12 @@ class CurrencyOperationsTest extends FunSuite {
 
   test("Check all native currency") {
     values.foreach { currency =>
-      assert(currency.native !== null)
+      assert(currency.toJava !== null)
     }
   }
 
   test("use java currency") {
-    val usd = JavaCurrency.getInstance("USD")
+    val usd = JavaCurrency("USD").toScala
     val pounds = GBP(2.0)
     val dollars = pounds to usd
     assert(dollars === USD(2.5))
