@@ -1,14 +1,17 @@
 package fr.ramiro.scala.currency
 
+import fr.ramiro.scala.currency.Currency._
 import java.text.NumberFormat
+
 import scala.language.implicitConversions
+import scala.runtime.ScalaRunTime
 
 object Amount {
-  implicit def numberAmountCurrencyWrapper[A <: AnyVal](value: A)(implicit currencyContext: CurrencyContext, toNumber: A => Number): Amount = {
+  implicit def numberAmountCurrencyWrapper[A <: AnyVal](value: A)(implicit currencyContext: CurrencySettings, toNumber: A => Number): Amount = {
     Amount(value.doubleValue(), currencyContext.base)
   }
 
-  implicit def amountNumeric(implicit currencyContext: CurrencyContext) = new Numeric[Amount] {
+  implicit def amountNumeric(implicit currencyContext: CurrencySettings) = new Numeric[Amount] {
 
     override def plus(x: Amount, y: Amount): Amount = x + y
 
@@ -32,7 +35,7 @@ object Amount {
   }
 }
 
-case class Amount(value: AmountType, currency: Currency)(implicit currencyConversion: CurrencyContext) extends Ordered[Amount] {
+case class Amount(value: AmountType, currency: Currency)(implicit currencyConversion: CurrencySettings) extends Ordered[Amount] {
   def to(targetCurrency: Currency): Amount = if (targetCurrency == currency) {
     this
   } else {
@@ -52,6 +55,16 @@ case class Amount(value: AmountType, currency: Currency)(implicit currencyConver
   private def performOperation(amount: Amount)(operation: (AmountType, AmountType) => AmountType) = {
     Amount(operation(value, (amount to currency).value), currency)
   }
+
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case other: Amount if this.canEqual(other) =>
+      this.value == other.to(this.currency).value
+    case _ => false
+  }
+
+  override def hashCode(): Int = scala.util.hashing.MurmurHash3.productHash(this.to(currencyConversion.base))
+
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Amount]
 
   override def compare(that: Amount): Int = value compare (that to currency).value
 
