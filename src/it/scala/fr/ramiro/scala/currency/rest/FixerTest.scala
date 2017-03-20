@@ -17,7 +17,8 @@ class FixerTest extends FunSuite with FixerFixture {
   }
 
   test("remote test") {
-    implicit val converterContext = Await.result(ratesFromFixer, Duration.Inf)
-    println(USD(2.0) + GBP(2.0) + 2.0)
+    val converterContext = Await.result(ratesFromFixer, Duration.Inf)
+    println(converterContext)
+    //    println(USD(2.0) + GBP(2.0) + 2.0)
   }
 }

@@ -11,8 +11,4 @@ package object currency {
   object JavaCurrency {
     def apply(currencyCode: String): JavaCurrency = java.util.Currency.getInstance(currencyCode)
   }
-
-  implicit class JavaCurrencyWrapper(javaCurrency: JavaCurrency) {
-    def toScala: Currency = Currency.withName(javaCurrency.getCurrencyCode)
-  }
 }

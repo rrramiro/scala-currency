@@ -1,46 +1,8 @@
 package fr.ramiro.scala.currency
 
-import fr.ramiro.scala.currency.Currency._
-import java.text.NumberFormat
-
-import scala.language.implicitConversions
-import scala.runtime.ScalaRunTime
-
-object Amount {
-  implicit def numberAmountCurrencyWrapper[A <: AnyVal](value: A)(implicit currencyContext: CurrencySettings, toNumber: A => Number): Amount = {
-    Amount(value.doubleValue(), currencyContext.base)
-  }
-
-  implicit def amountNumeric(implicit currencyContext: CurrencySettings) = new Numeric[Amount] {
-
-    override def plus(x: Amount, y: Amount): Amount = x + y
-
-    override def minus(x: Amount, y: Amount): Amount = x - y
-
-    override def times(x: Amount, y: Amount): Amount = x * y
-
-    override def negate(x: Amount): Amount = -x
-
-    override def fromInt(x: Int): Amount = x
-
-    override def toInt(x: Amount): Int = x.value.toInt
-
-    override def toLong(x: Amount): Long = x.value.toLong
-
-    override def toFloat(x: Amount): Float = x.value.toFloat
-
-    override def toDouble(x: Amount): Double = x.value.toDouble
-
-    override def compare(x: Amount, y: Amount): Int = x compare y
-  }
-}
-
-case class Amount(value: AmountType, currency: Currency)(implicit currencyConversion: CurrencySettings) extends Ordered[Amount] {
-  def to(targetCurrency: Currency): Amount = if (targetCurrency == currency) {
-    this
-  } else {
-    Amount(value * currencyConversion.converter(currency, targetCurrency), targetCurrency)
-  }
+case class Amount(value: AmountType, currency: Currency) extends Ordered[Amount] {
+  //TODO currency conversion
+  def to(targetCurrency: Currency): Amount = this
 
   def +(amount: Amount): Amount = performOperation(amount) { _ + _ }
 
@@ -62,15 +24,13 @@ case class Amount(value: AmountType, currency: Currency)(implicit currencyConver
     case _ => false
   }
 
-  override def hashCode(): Int = scala.util.hashing.MurmurHash3.productHash(this.to(currencyConversion.base))
+  //TODO hashCode
+  override def hashCode(): Int = this.hashCode()
 
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Amount]
 
   override def compare(that: Amount): Int = value compare (that to currency).value
 
-  override def toString: String = {
-    val formatter = NumberFormat.getCurrencyInstance(currencyConversion.locale)
-    formatter.setCurrency(currency.toJava)
-    formatter.format(value)
-  }
+  //TODO toString
+  override def toString: String = this.toString
 }

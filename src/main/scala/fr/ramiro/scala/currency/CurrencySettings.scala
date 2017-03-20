@@ -1,7 +1,6 @@
 package fr.ramiro.scala.currency
 
 import java.util.Locale
-import fr.ramiro.scala.currency.Currency._
 
 case class CurrencySettings(converter: ConverterFunction, base: Currency, fractionDigits: Int, locale: Locale)
 
@@ -15,7 +14,7 @@ object CurrencySettings {
         )
       }.toMap,
       base = base,
-      base.toJava.getDefaultFractionDigits,
+      2, //TODO Get fractionDigits from java Currency
       locale = Locale.getDefault
     )
   }
