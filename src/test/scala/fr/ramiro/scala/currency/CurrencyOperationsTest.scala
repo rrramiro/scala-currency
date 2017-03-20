@@ -31,6 +31,11 @@ class CurrencyOperationsTest extends FunSuite {
     assert(total === USD(10))
   }
 
+  test("sum") {
+    val list = Seq(USD(2.0), GBP(2.0))
+    assert(list.sum === GBP(3.0))
+  }
+
   test("Check all native currency") {
     values.foreach { currency =>
       assert(currency.toJava !== null)
@@ -42,11 +47,6 @@ class CurrencyOperationsTest extends FunSuite {
     val pounds = GBP(2.0)
     val dollars = pounds to usd
     assert(dollars === USD(4.0))
-  }
-
-  test("sum") {
-    val list = Seq(USD(2.0), GBP(2.0))
-    assert(list.sum === GBP(3.0))
   }
 
   test("display") {
