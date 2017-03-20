@@ -8,7 +8,7 @@ object Currency extends Enumeration {
   implicit class CurrencyWrapper(delegate: Value) {
     def toJava: JavaCurrency = JavaCurrency(delegate.toString)
 
-    def apply[A <: AnyVal](value: A)(implicit currencyContext: CurrencyContext, toNumber: A => Number): Amount = {
+    def apply[A <: AnyVal](value: A)(implicit currencyContext: CurrencySettings, toNumber: A => Number): Amount = {
       Amount(value.doubleValue(), delegate)
     }
   }
