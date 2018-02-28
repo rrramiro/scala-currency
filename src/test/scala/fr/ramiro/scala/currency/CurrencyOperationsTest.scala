@@ -49,10 +49,17 @@ class CurrencyOperationsTest extends FunSuite {
     assert(dollars === USD(4.0))
   }
 
+  test("conversion form string") {
+    implicit def stringToNumber(s: String): Number = BigDecimal(s)
+    val poundsFromString = GBP("2.0")
+    val pounds = GBP(2.0)
+    assert(pounds === poundsFromString)
+  }
+
   test("display") {
-    assert(GBP(2.0).toString === "£2.00")
-    assert(USD(2.0).toString === "USD2.00")
-    assert(EUR(2.0).toString === "€2.00")
-    assert(ITL(2.0).toString === "ITL2.00")
+    assert(GBP(2.0).toString === "2,00 GBP")
+    assert(USD(2.0).toString === "2,00 USD")
+    assert(EUR(2.0).toString === "2,00 €")
+    assert(ITL(2.0).toString === "2,00 ITL")
   }
 }
