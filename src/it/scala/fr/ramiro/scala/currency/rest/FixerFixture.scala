@@ -11,8 +11,8 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
 
 trait FixerFixture extends BeforeAndAfterAll { this: Suite =>
-  private implicit val system = ActorSystem()
-  private implicit val materializer = ActorMaterializer()
+  private implicit val system: ActorSystem = ActorSystem()
+  private implicit val materializer: ActorMaterializer = ActorMaterializer()
   private val wsClient = StandaloneAhcWSClient()
 
   override def afterAll: Unit = {
@@ -50,15 +50,15 @@ trait FixerFixture extends BeforeAndAfterAll { this: Suite =>
     case _ => throw new Exception("error")
   }
 
-  def parseFixerResponse(json: String): CurrencySettings = {
-    Json.fromJson[CurrencySettings](Json.parse("""{"base":"USD","date":"2016-12-08","rates":{"GBP":0.78977}}""")).getOrElse {
-      throw new Exception(s"Fail to parse Fixer response")
-    }
+  def parseFixerResponse(json: String): JsResult[CurrencySettings] = {
+    Json.fromJson[CurrencySettings](Json.parse(json))
   }
 
   def ratesFromFixer(implicit ec: ExecutionContext): Future[CurrencySettings] = {
-    wsClient.url("http://api.fixer.io/latest?base=USD&symbols=USD,GBP").get().map { response =>
-      parseFixerResponse(response.body)
+    for {
+      response <- wsClient.url("http://api.fixer.io/latest?base=USD&symbols=USD,GBP").get()
+    } yield {
+      parseFixerResponse(response.body).get // TODO catch error
     }
   }
 }

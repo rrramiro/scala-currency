@@ -15,7 +15,7 @@ object CurrencySettings {
         )
       }.toMap,
       base = base,
-      base.toJava.getDefaultFractionDigits,
+      /* base.toJava.getDefaultFractionDigits */ 2,
       locale = Locale.getDefault
     )
   }
