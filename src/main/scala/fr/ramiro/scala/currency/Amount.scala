@@ -47,3 +47,31 @@ case class Amount(value: AmountType, currency: Currency)(implicit currencyConver
   }
   */
 }
+
+object Amount {
+  implicit def amountWithDefaultCurrency(value: Double)(implicit currencySettings: CurrencySettings): Amount = {
+    Amount(value, currencySettings.base)
+  }
+
+  implicit def numericAmount(implicit currencySettings: CurrencySettings): Numeric[Amount] = new Numeric[Amount] {
+    override def plus(x: Amount, y: Amount): Amount = x + y
+
+    override def minus(x: Amount, y: Amount): Amount = x - y
+
+    override def times(x: Amount, y: Amount): Amount = x * y
+
+    override def negate(x: Amount): Amount = -x
+
+    override def fromInt(x: Int): Amount = Amount(x.toDouble, currencySettings.base)
+
+    override def toInt(x: Amount): Int = x.toInt()
+
+    override def toLong(x: Amount): Long = x.toLong()
+
+    override def toFloat(x: Amount): Float = x.toFloat()
+
+    override def toDouble(x: Amount): Double = x.toDouble()
+
+    override def compare(x: Amount, y: Amount): Int = x.compare(y)
+  }
+}
